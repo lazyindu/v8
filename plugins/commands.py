@@ -290,8 +290,8 @@ async def start(client, message):
         f_caption = f"{files.file_name}"
 
     # stream online and download
-    stream_link = URL + 'watch/' + str(files_.file_id)
-    online_link = URL + 'download/' + str(files_.file_id)
+    stream_link = URL + 'watch/' + str(file_id)
+    online_link = URL + 'download/' + str(file_id)
     short_stream_link = get_shortlink(stream_link)
     short_online_link = get_shortlink(online_link)
     await client.send_cached_media(
