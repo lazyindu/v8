@@ -3,7 +3,7 @@ from pyrogram import Client
 from info import *
 
 StreamBot = Client(
-    session_name='Web Streamer',
+    name=SESSION,
     api_id=API_ID,
     api_hash=API_HASH,
     bot_token=BOT_TOKEN,
