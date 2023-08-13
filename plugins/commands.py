@@ -290,9 +290,8 @@ async def start(client, message):
         f_caption = f"{files.file_name}"
 
     # stream online and download
-    # log_msg = await message.forward(chat_id=LOG_CHANNEL)
-    stream_link = URL + 'watch/' + str(files_.message_id)
-    online_link = URL + 'download/' + str(files_.message_id)
+    stream_link = URL + 'watch/' + str(files_.file_id)
+    online_link = URL + 'download/' + str(files_.file_id)
     short_stream_link = get_shortlink(stream_link)
     short_online_link = get_shortlink(online_link)
     await client.send_cached_media(
