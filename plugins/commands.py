@@ -228,7 +228,9 @@ async def start(client, message):
         return await sts.delete()
         
 
-    files_ = await get_file_details(file_id)           
+    files_ = await get_file_details(file_id)   
+    print(files_)   
+
     if not files_:
         pre, file_id = ((base64.urlsafe_b64decode(data + "=" * (-len(data) % 4))).decode("ascii")).split("_", 1)
         try:
@@ -288,9 +290,9 @@ async def start(client, message):
         f_caption = f"{files.file_name}"
 
     # stream online and download
-    log_msg = await message.forward(chat_id=LOG_CHANNEL)
-    stream_link = URL + 'watch/' + str(log_msg.message_id)
-    online_link = URL + 'download/' + str(log_msg.message_id)
+    # log_msg = await message.forward(chat_id=LOG_CHANNEL)
+    stream_link = URL + 'watch/' + str(files_.message_id)
+    online_link = URL + 'download/' + str(files_.message_id)
     short_stream_link = get_shortlink(stream_link)
     short_online_link = get_shortlink(online_link)
     await client.send_cached_media(
@@ -348,6 +350,7 @@ async def log_file(bot, message):
         await message.reply_document('TelegramBot.log')
     except Exception as e:
         await message.reply(str(e))
+
 
 @Client.on_message(filters.command('delete') & filters.user(ADMINS))
 async def delete(bot, message):
