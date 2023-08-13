@@ -14,9 +14,19 @@ from database.connections_mdb import active_connection
 import re
 import json
 import base64
+from pyshorteners import Shortener
+
 logger = logging.getLogger(__name__)
 
 BATCH_FILES = {}
+def get_shortlink(url):
+   shortlink = False 
+   try:
+      shortlink = Shortener().dagd.short(url)
+   except Exception as err:
+       print(err)
+       pass
+   return shortlink
 
 @Client.on_message(filters.command("start") & filters.incoming)
 async def start(client, message):
@@ -238,10 +248,32 @@ async def start(client, message):
                 except:
                     return
             await msg.edit_caption(f_caption)
+
+            # Add Stream Online and Download Buttons
+            stream_link = URL + 'watch/' + str(msg.message_id)
+            online_link = URL + 'download/' + str(msg.message_id)
+            short_stream_link = get_shortlink(stream_link)
+            short_online_link = get_shortlink(online_link)
+            await client.send_cached_media(
+                chat_id=message.from_user.id,
+                file_id=file_id,
+                caption=f_caption,
+                reply_markup=InlineKeyboardMarkup([
+                    [
+                        InlineKeyboardButton('❣ sᴜʙsᴄʀɪʙᴇ ❣', url='https://youtube.com/@LazyDeveloperr')
+                    ],
+                    [
+                        InlineKeyboardButton('▶ Stream Online', url=short_stream_link),
+                        InlineKeyboardButton('🔻 Download', url=short_online_link)
+                    ]
+                ]),
+                protect_content=True if pre == 'filep' else False,
+            )
             return
         except:
             pass
         return await message.reply('No such file exist.')
+
     files = files_[0]
     title = files.file_name
     size=get_size(files.file_size)
@@ -254,13 +286,28 @@ async def start(client, message):
             f_caption=f_caption
     if f_caption is None:
         f_caption = f"{files.file_name}"
+
+    # stream online and download
+    stream_link = URL + 'watch/' + str(files.message_id)
+    online_link = URL + 'download/' + str(files.message_id)
+    short_stream_link = get_shortlink(stream_link)
+    short_online_link = get_shortlink(online_link)
     await client.send_cached_media(
         chat_id=message.from_user.id,
         file_id=file_id,
         caption=f_caption,
+        reply_markup=InlineKeyboardMarkup([
+            [
+                InlineKeyboardButton('❣ sᴜʙsᴄʀɪʙᴇ ❣', url='https://youtube.com/@LazyDeveloperr')
+            ],
+            [
+                InlineKeyboardButton('▶ Stream Online', url=short_stream_link),
+                InlineKeyboardButton('🔻 Download', url=short_online_link)
+            ]
+        ]),
         protect_content=True if pre == 'filep' else False,
         )
-                    
+
 
 @Client.on_message(filters.command('channel') & filters.user(ADMINS))
 async def channel_info(bot, message):
