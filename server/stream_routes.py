@@ -1,24 +1,19 @@
-#LazyDev
+# (c) adarsh-goel
 import time
 import math
 import logging
 import secrets
 import mimetypes
-from info import *
+from ..vars import Var
 from aiohttp import web
-from lazybot import StreamBot
-from util.custom_dl import TGCustomYield, chunk_size, offset_fix
-from util.render_template import render_page
-from util.time_format import get_readable_time
+from ..bot import StreamBot
+from Adarsh import StartTime
+from ..utils.custom_dl import TGCustomYield, chunk_size, offset_fix
+from Adarsh.utils.render_template import render_page
+from ..utils.time_format import get_readable_time
 routes = web.RouteTableDef()
 from urllib.parse import quote_plus
 kg18="ago"
-
-
-
-
-StartTime = time.time()
-
 
 @routes.get("/", allow_head=True)
 async def root_route_handler(request):
@@ -53,7 +48,7 @@ async def old_stream_handler(request):
 
 async def media_streamer(request, message_id: int):
     range_header = request.headers.get('Range', 0)
-    media_msg = await StreamBot.get_messages(LOG_CHANNEL, message_id)
+    media_msg = await StreamBot.get_messages(Var.BIN_CHANNEL, message_id)
     file_properties = await TGCustomYield().generate_file_properties(media_msg)
     file_size = file_properties.file_size
 
