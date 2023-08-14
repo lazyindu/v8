@@ -148,11 +148,11 @@ class TGCustomYield:
 
         return location
 
-    async def yield_file(self, media_msg: Message, offset: int, first_part_cut: int,
+    async def yield_file(self, file_id: Message, offset: int, first_part_cut: int,
                          last_part_cut: int, part_count: int, chunk_size: int) -> Union[str, None]: #pylint: disable=unsubscriptable-object
         client = self.main_bot
-        data = await self.generate_file_properties(media_msg)
-        media_session = await self.generate_media_session(client, media_msg)
+        data = await self.generate_file_properties(file_id)
+        media_session = await self.generate_media_session(client, file_id)
 
         current_part = 1
 
@@ -190,10 +190,10 @@ class TGCustomYield:
 
                 current_part += 1
 
-    async def download_as_bytesio(self, media_msg: Message):
+    async def download_as_bytesio(self, file_id: Message):
         client = self.main_bot
-        data = await self.generate_file_properties(media_msg)
-        media_session = await self.generate_media_session(client, media_msg)
+        data = await self.generate_file_properties(file_id)
+        media_session = await self.generate_media_session(client, file_id)
 
         location = await self.get_location(data)
 

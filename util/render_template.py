@@ -12,9 +12,9 @@ import aiohttp
 from database.ia_filterdb import  get_file_details
 
 async def fetch_properties(file_id):
-    # media_msg = await StreamBot.get_messages(LOG_CHANNEL, message_id)
-    media_msg = await get_file_details(file_id)
-    file_properties = await TGCustomYield().generate_file_properties(media_msg)
+    # file_id = await StreamBot.get_messages(LOG_CHANNEL, message_id)
+    file_id = await get_file_details(file_id)
+    file_properties = await TGCustomYield().generate_file_properties(file_id)
     file_name = file_properties.file_name if file_properties.file_name \
         else f"{secrets.token_hex(2)}.jpeg"
     mime_type = file_properties.mime_type if file_properties.mime_type \

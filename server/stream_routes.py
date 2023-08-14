@@ -1,19 +1,25 @@
-# (c) adarsh-goel
+#LazyDev
 import time
 import math
 import logging
 import secrets
 import mimetypes
-from ..vars import Var
+from info import *
 from aiohttp import web
-from ..bot import StreamBot
-from Adarsh import StartTime
-from ..utils.custom_dl import TGCustomYield, chunk_size, offset_fix
-from Adarsh.utils.render_template import render_page
-from ..utils.time_format import get_readable_time
+from lazybot import StreamBot
+from util.custom_dl import TGCustomYield, chunk_size, offset_fix
+from util.render_template import render_page
+from util.time_format import get_readable_time
 routes = web.RouteTableDef()
 from urllib.parse import quote_plus
+from database.ia_filterdb import  get_file_details
 kg18="ago"
+
+
+
+
+StartTime = time.time()
+
 
 @routes.get("/", allow_head=True)
 async def root_route_handler(request):
@@ -26,30 +32,31 @@ async def root_route_handler(request):
                               "Bot Version":"3.0.1"})
 
 
-@routes.get("/watch/{message_id}")
+@routes.get("/watch/{file_id}")
 async def stream_handler(request):
     try:
-        message_id = int(request.match_info['message_id'])
-        return web.Response(text=await render_page(message_id), content_type='text/html')
+        file_id = int(request.match_info['file_id'])
+        return web.Response(text=await render_page(file_id), content_type='text/html')
     except ValueError as e:
         logging.error(e)
         raise web.HTTPNotFound
         
-@routes.get("/download/{message_id}")
-@routes.get("/{message_id}")
+@routes.get("/download/{file_id}")
+@routes.get("/{file_id}")
 async def old_stream_handler(request):
     try:
-        message_id = int(request.match_info['message_id'])
-        return await media_streamer(request, message_id)
+        file_id = int(request.match_info['file_id'])
+        return await media_streamer(request, file_id)
     except ValueError as e:
         logging.error(e)
         raise web.HTTPNotFound
         
 
-async def media_streamer(request, message_id: int):
+async def media_streamer(request, file_id: int):
     range_header = request.headers.get('Range', 0)
-    media_msg = await StreamBot.get_messages(Var.BIN_CHANNEL, message_id)
-    file_properties = await TGCustomYield().generate_file_properties(media_msg)
+    file_id = await get_file_details(file_id)  # You should implement this function
+    # file_id = await StreamBot.get_messages(LOG_CHANNEL, message_id)
+    file_properties = await TGCustomYield().generate_file_properties(file_id)
     file_size = file_properties.file_size
 
     if range_header:
@@ -67,7 +74,7 @@ async def media_streamer(request, message_id: int):
     first_part_cut = from_bytes - offset
     last_part_cut = (until_bytes % new_chunk_size) + 1
     part_count = math.ceil(req_length / new_chunk_size)
-    body = TGCustomYield().yield_file(media_msg, offset, first_part_cut, last_part_cut, part_count,
+    body = TGCustomYield().yield_file(file_id, offset, first_part_cut, last_part_cut, part_count,
                                       new_chunk_size)
 
     file_name = file_properties.file_name if file_properties.file_name \
